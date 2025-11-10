@@ -81,16 +81,15 @@
    let bcrypt=    require('bcrypt')
 
 
-//    npm i mongoose
+// npm i mongoose
 // npm i bcrypt
+// npm i express
 
  let app=     express()
  app.use(express.json())
  mongoose.connect("mongodb://127.0.0.1:27017/5thSem").
  then(()=>{
     console.log("db conneted...");
-    
-
  })
 
 
@@ -108,7 +107,6 @@
      if(user){
         res.send("user jinda haiii")
      }
-
          let updatedP=     await  bcrypt.hash(passWord,10)
          console.log(updatedP,"HEH");
          
@@ -122,9 +120,30 @@
             //   console.log(userName,email, passWord);
             
  })
+
+ app.post("/login",async(req,res)=>{
+    let {email,passWord}=   req.body
+
+
+       let userInfo=    await User.findOne({email})
+       console.log(userInfo,"kyaa milegaaaaaaaa");
+       
+       if(!userInfo){
+         res.send("user not found")
+       }else{
+        let validPass=   await bcrypt.compare(passWord,userInfo.passWord,)
+        if(validPass){
+         res.send("login ho gyaa")
+        }else{
+         res.send("pass sahi nhi haiiii")
+        }
+       }
+         
+
+ })
   
  app.listen(4000,()=>{
-    console.log("server running on port no 7000");
+    console.log("server running on port no 4000");
     
  })
 
