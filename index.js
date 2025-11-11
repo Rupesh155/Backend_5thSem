@@ -71,14 +71,16 @@
 
 
 
-// // htts://google.com/?first=ankit
+// htts://google.com/?first=ankit
 
 
  let express=  require('express')
      let mongoose=      require('mongoose')
+    let cors=   require('cors')
 
    let User=    require('./user')
    let bcrypt=    require('bcrypt')
+
 
 
 // npm i mongoose
@@ -86,7 +88,10 @@
 // npm i express
 
  let app=     express()
+ app.use(cors())
+   
  app.use(express.json())
+
  mongoose.connect("mongodb://127.0.0.1:27017/5thSem").
  then(()=>{
     console.log("db conneted...");
@@ -123,6 +128,8 @@
 
  app.post("/login",async(req,res)=>{
     let {email,passWord}=   req.body
+    console.log(email,passWord);
+    
 
 
        let userInfo=    await User.findOne({email})
@@ -138,8 +145,7 @@
          res.send("pass sahi nhi haiiii")
         }
        }
-         
-
+        
  })
   
  app.listen(4000,()=>{
@@ -159,3 +165,31 @@
 //     console.log("hello");
     
 //  }
+
+
+ 
+
+// let express= require('express')
+// let mongoose= require('mongoose')
+// //npm i mongoose
+//   let app=      express()
+//   mongoose.connect("mongodb://127.0.0.1:27017/5thSem").
+//   then(()=>{
+//    console.log("db....");
+//   })
+//   app.get('/',(req,res)=>{
+//    res.send("hello")
+
+//   })
+//   app.listen("4000",()=>{
+//    console.log("server running on port no 4000");
+   
+//   })
+
+//   // show dbs 
+
+//   // use dbName 
+  
+  // show collections 
+
+  // db.collectionsName.find()
