@@ -80,6 +80,8 @@
 
    let User=    require('./user')
    let bcrypt=    require('bcrypt')
+   let sendOtp=    require('./twillioService')
+
 
 
 
@@ -147,6 +149,20 @@
        }
         
  })
+
+
+
+ app.post('/send-otp', async (req, res) => {
+  const { phoneNumber } = req.body;
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  try {
+    await sendOtp(phoneNumber, otp);
+    res.status(200).send({ message: 'OTP sent successfully', otp });
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to send OTP' });
+  }
+});
+
   
  app.listen(4000,()=>{
     console.log("server running on port no 4000");

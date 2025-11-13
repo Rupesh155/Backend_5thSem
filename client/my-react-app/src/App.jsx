@@ -2,6 +2,7 @@ import React from 'react'
 import SignUp from './SignUp'
 import Login from './Login'
 import { Route, Routes } from 'react-router-dom'
+import Otp from './Otp'
 
 const App = () => {
   return (
@@ -9,8 +10,9 @@ const App = () => {
    
 
       <Routes>
-        <Route   path='/' element={<SignUp/>}/>
-        <Route   path='/login' element={<Login/>}/>
+        <Route  path='/' element={<Otp/>}/>
+        {/* <Route   path='/' element={<SignUp/>}/>
+        <Route   path='/login' element={<Login/>}/> */}
 
       </Routes>
     </div>
