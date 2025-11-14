@@ -3,21 +3,18 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 
 const Otp = () => {
-  const [input, setInput] = useState({
-    number: "",
-   
-  });
+  const [phoneNumber, setphoneNumber] = useState();
 
   function loginFun(e) {
     const { name, value } = e.target;
-    setInput(prev => ({ ...prev, [name]: value }));
+    setphoneNumber(e.target.value);
   }
 
   async function done() {
     try {
-      console.log("DATA GOING TO BACKEND:", input);
+      console.log("DATA GOING TO BACKEND:", phoneNumber);
 
-      const res = await axios.post("http://localhost:4000/send-otp", input, {
+      const res = await axios.post("http://localhost:4000/send-otp", phoneNumber, {
       });
 
       console.log("SERVER RESPONSE →", res.data);
@@ -28,13 +25,12 @@ const Otp = () => {
   }
 
   return (
-    <div>
       <fieldset>  
-        <input 
+        <input
           type='number'
           onChange={loginFun}
-          name='number'
-          value={input.number}
+          name='phoneNumber'
+          value={phoneNumber}
           placeholder='Enter your number'
         />
 
