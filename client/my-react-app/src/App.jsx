@@ -2,7 +2,9 @@ import React from 'react'
 import SignUp from './SignUp'
 import Login from './Login'
 import { Route, Routes } from 'react-router-dom'
-import Otp from './Otp'
+import Forget from './Forget'
+import Reset from './Reset'
+// import Otp from './Otp'
 
 const App = () => {
   return (
@@ -10,9 +12,15 @@ const App = () => {
    
 
       <Routes>
-        <Route  path='/' element={<Otp/>}/>
-        {/* <Route   path='/' element={<SignUp/>}/>
-        <Route   path='/login' element={<Login/>}/> */}
+        {/* <Route  path='/' element={<Otp/>}/> */}
+        <Route   path='/' element={<SignUp/>}/>
+        <Route   path='/login' element={<Login/>}/>
+        <Route   path='/forget' element={<Forget/>}/>
+        <Route   path='/reset/:resetToken' element={<Reset/>}/>
+
+
+
+
 
       </Routes>
     </div>
@@ -20,3 +28,4 @@ const App = () => {
 }
 
 export default App 
+

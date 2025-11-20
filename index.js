@@ -183,10 +183,6 @@
 //     console.log("hello");
     
 //  }
-
-
- 
-
 // let express= require('express')
 // let mongoose= require('mongoose')
 // //npm i mongoose
@@ -197,39 +193,34 @@
 //   })
 //   app.get('/',(req,res)=>{
 //    res.send("hello")
-
 //   })
 //   app.listen("4000",()=>{
 //    console.log("server running on port no 4000");
-   
-//   })
-
-//   // show dbs 
-
-//   // use dbName 
   
+//   })
+//   // show dbs 
+//   // use dbName 
+
   // show collections 
-
   // db.collectionsName.find()
-
-
-//   RABC
-
-
+//   Rbac
  let express= require('express')
    let mongoose=     require('mongoose')
 let User=    require('./user')
 let bcrypt=    require('bcrypt')
 let jwt=    require('jsonwebtoken')
+  const crypto = require('crypto');
+  const cors = require('cors');
 
-
-
+ let {sendEmail} = require('./sendEmail')
   mongoose.connect("mongodb://127.0.0.1:27017/5thSem").
   then(()=>{
    console.log("db....");
   })
+    
   let app=     express()
   app.use(express.json())
+  app.use(cors())
 
 //   app.use((req,res)=>{
 //    res.send("mai hu idherr")
@@ -239,6 +230,7 @@ let jwt=    require('jsonwebtoken')
    res.send("hello")
    
   })
+
    app.post('/create',  async(req,res)=>{
           let {userName,email,passWord,role}=   req.body
       console.log(userName,email ,"heheh");
@@ -256,7 +248,7 @@ let jwt=    require('jsonwebtoken')
             userName,
             email,
             passWord:updatedP,
-            role:role||'user'
+            role:role||'student'
          })
               await userData.save()
               res.send("account ban gya hai....")
@@ -276,7 +268,7 @@ let jwt=    require('jsonwebtoken')
        }else{
         let validPass=   await bcrypt.compare(passWord,userInfo.passWord,)
         if(validPass){
-         let token = jwt.sign({  email: userInfo.email, role: userInfo.role }, "JHBFIUWBFIUWB");
+         let token = jwt.sign({  email: userInfo.email, role: userInfo.role }, "z");
          console.log(token,"tokennnnn");
          
          res.send("login ho gyaa")
@@ -286,9 +278,7 @@ let jwt=    require('jsonwebtoken')
        }
         
  })
-
-      
- function checkRole(role){
+ function checkRole(role,role1){
    return (req,res,next)=>{
       let token = req.headers.authorization;
       if (!token) {
@@ -296,7 +286,7 @@ let jwt=    require('jsonwebtoken')
      }else{
       let deCodedToken = jwt.verify(token,  "JHBFIUWBFIUWB");
 
-      if (role!==deCodedToken.role) {
+      if (role!==deCodedToken.role ) {
          return res.send('Access denieddd ||')
      }
      else {
@@ -310,10 +300,75 @@ let jwt=    require('jsonwebtoken')
 
 
 
+
+ app.post('/forgot-password', async (req, res) => {
+   const { email } = req.body;
+   try {
+     const user = await User.findOne({ email });
+     if (!user) {
+       return res.status(404).send('User not found');
+     }
+ 
+   
+     const resetToken = crypto.randomBytes(20).toString('hex');
+     user.resetToken = resetToken;
+     user.resetTokenExpiry = Date.now() + 3600000; 
+     await user.save();
+ 
+ 
+    //  const resetUrl = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
+    let resetUrl=`http://localhost:5173/reset/${resetToken}`
+     await sendEmail(
+       user.email,
+       'Password Reset Request',
+       `Click the link below to reset your password:\n\n${resetUrl}`
+     );
+ 
+     res.status(200).send('Password reset email sent');
+   } catch (error) {
+     res.status(500).send('Error sending password reset email: ' + error.message);
+   }
+ });
+
+
+
+  
+ // Reset Password
+ app.post('/reset-password/:token', async (req, res) => {
+   const { token } = req.params;
+   const { newPassword } = req.body;
+ 
+   try {
+     const user = await User.findOne({
+       resetToken: token,
+       resetTokenExpiry: { $gt: Date.now() }, 
+     });
+ 
+     if (!user) {
+       return res.status(400).send('Invalid or expired token');
+     }
+ 
+     // Hash the new password
+     const hashedPassword = await bcrypt.hash(newPassword, 10);
+     user.passWord = hashedPassword;
+     user.resetToken = undefined;
+     user.resetTokenExpiry = undefined;
+     await user.save();
+ 
+     res.status(200).send('Password reset successfully');
+   } catch (error) {
+     res.status(500).send('Error resetting password: ' + error.message);
+   }
+ });
+ 
+
+
+
   app.get('/public',(req,res)=>{
    res.send("isko koi bhi dekh sakta hai")
 
   })
+  
   app.get('/private', checkRole('admin') , (req,res)=>{
    res.send("404......")
 
@@ -327,3 +382,10 @@ let jwt=    require('jsonwebtoken')
 
 
 
+
+//   let express=  require('express')
+//   let User=   require('../models/userModel')
+//   let router=   express.Router()
+
+
+//  module.exports=router
